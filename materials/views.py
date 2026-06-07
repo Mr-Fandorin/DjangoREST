@@ -13,8 +13,7 @@ from users.models import Payment
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ('lesson', 'course')
-
+    filterset_fields = ("course_name",)
 
     def get_serializer_class(self):
         if self.action == "retrieve":
