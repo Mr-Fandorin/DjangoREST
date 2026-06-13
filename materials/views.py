@@ -56,9 +56,9 @@ class LessonListAPIView(ListAPIView):
     queryset = Lesson.objects.all()
 
     def perform_create(self, serializer):
-        course = serializer.save()
-        course.owner = self.request.user
-        course.save()
+        lesson = serializer.save()
+        lesson.owner = self.request.user
+        lesson.save()
 
 
 
