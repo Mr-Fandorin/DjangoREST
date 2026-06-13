@@ -1,10 +1,7 @@
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-
-from materials.models import Course, Lesson
-
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.db import models
 
 
 class User(AbstractUser):
@@ -37,65 +34,58 @@ class User(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
 
-    # def __str__(self):
-    #     return self.email
-
-
-
-
 
 class Payment(models.Model):
     PAYMENT_METHOD_CHOICES = [
-        ('cash', 'Наличные'),
-        ('transfer', 'Перевод на счёт'),
+        ("cash", "Наличные"),
+        ("transfer", "Перевод на счёт"),
     ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='payments',
-        verbose_name='Пользователь'
+        related_name="payments",
+        verbose_name="Пользователь",
     )
+
 
     paid_course = models.ForeignKey(
-        Course,
+        "materials.Course",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='course_payments',
-        verbose_name='Оплаченный курс'
+        related_name="course_payments",
+        verbose_name="Оплаченный курс",
     )
 
+
     paid_lesson = models.ForeignKey(
-        Lesson,
+        "materials.Lesson",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='lesson_payments',
-        verbose_name='Оплаченный урок'
+        related_name="lesson_payments",
+        verbose_name="Оплаченный урок",
     )
 
     amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name='Сумма оплаты'
+        max_digits=10, decimal_places=2, verbose_name="Сумма оплаты"
     )
 
-    payment_date = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Дата оплаты'
-    )
+    payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
 
     payment_method = models.CharField(
         max_length=20,
         choices=PAYMENT_METHOD_CHOICES,
-        default='transfer',
-        verbose_name='Способ оплаты'
+        default="transfer",
+        verbose_name="Способ оплаты",
     )
 
     def clean(self):
         if self.paid_course and self.paid_lesson:
-            raise ValidationError("Можно указать либо курс, либо урок, но не оба одновременно.")
+            raise ValidationError(
+                "Можно указать либо курс, либо урок, но не оба одновременно."
+            )
         if not self.paid_course and not self.paid_lesson:
             raise ValidationError("Необходимо указать либо курс, либо урок.")
 
@@ -105,3 +95,5 @@ class Payment(models.Model):
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
+
+

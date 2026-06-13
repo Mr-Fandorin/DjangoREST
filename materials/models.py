@@ -8,13 +8,18 @@ class Course(models.Model):
     )
     description = models.TextField(null=True, blank=True, verbose_name="Описание курса")
 
-    # def __str__(self):
-    #     return self.course_name
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца курса",
+    )
 
     class Meta:
         verbose_name = "курс"
         verbose_name_plural = "курсы"
-        # ordering = ["course_name"]
 
 
 class Lesson(models.Model):
@@ -36,10 +41,17 @@ class Lesson(models.Model):
         blank=True,
     )
 
-    # def __str__(self):
-    #     return self.lesson_name
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца урока",
+    )
 
     class Meta:
         verbose_name = "урок"
         verbose_name_plural = "уроки"
-        # ordering = ["lesson_name", "course_name"]
+
+
