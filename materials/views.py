@@ -10,7 +10,8 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from materials.models import Course, Lesson
+from materials.models import Course, Lesson, CourseSubscription
+from materials.paginations import CustomPagination
 from materials.serializers import (
     CourseDetailSerializer,
     CourseSerializer,
@@ -20,11 +21,18 @@ from materials.serializers import (
 from users.models import Payment
 from users.permissions import IsModer, IsOwner
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+
+
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ("course_name",)
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -54,6 +62,7 @@ class LessonCreateAPIView(CreateAPIView):
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = CustomPagination
 
     def perform_create(self, serializer):
         lesson = serializer.save()
@@ -87,3 +96,33 @@ class PaymentViewSet(ModelViewSet):
     filterset_fields = ("paid_course", "paid_lesson", "payment_method")
     ordering_fields = ("payment_date",)
     ordering = ["-payment_date"]
+
+
+
+
+
+class ToggleCourseSubscriptionView(APIView):
+
+    def post(self, request, course_id):
+        user = request.user
+
+        if not user.is_authenticated:
+            return Response(
+                {"message": "Требуется авторизация"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        course = get_object_or_404(Course, id=course_id)
+
+        subs_item = CourseSubscription.objects.filter(user=user, course=course)
+
+        if subs_item.exists():
+            subs_item.delete()
+            message = 'подписка удалена'
+            status_code = status.HTTP_200_OK
+        else:
+            CourseSubscription.objects.create(user=user, course=course)
+            message = 'подписка добавлена'
+            status_code = status.HTTP_201_CREATED
+
+        return Response({"message": message}, status=status_code)
