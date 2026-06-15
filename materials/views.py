@@ -58,16 +58,16 @@ class LessonCreateAPIView(CreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = (~IsModer, IsAuthenticated)
 
+    def perform_create(self, serializer):
+        lesson = serializer.save()
+        lesson.owner = self.request.user
+        lesson.save()
+
 
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     pagination_class = CustomPagination
-
-    def perform_create(self, serializer):
-        lesson = serializer.save()
-        lesson.owner = self.request.user
-        lesson.save()
 
 
 
