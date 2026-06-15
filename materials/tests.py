@@ -66,15 +66,23 @@ class CourseTestCase(APITestCase):
         url = reverse("materials:course-list")
         response = self.client.get(url)
         data = response.json()
-        result = {'count': 1, 'next': None, 'previous': None, 'results':
-            [{'id': 4, 'is_subscribed': False, 'course_name': 'Python', 'photo': None,
-              'description': 'Хороший курс}', 'owner': 3}]}
-        self.assertEqual(
-            response.status_code, status.HTTP_200_OK
-        )
-        self.assertEqual(
-            data, result
-        )
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.course.pk,
+                    "is_subscribed": False,
+                    "course_name": self.course.course_name,
+                    "photo": self.course.photo,
+                    "description": self.course.description,
+                    "owner": self.course.owner.pk,
+                }
+            ],
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, result)
 
 
 class LessonTestCase(APITestCase):
@@ -138,12 +146,21 @@ class LessonTestCase(APITestCase):
         response = self.client.get(url)
         data = response.json()
         print(data)
-        result = {'count': 1, 'next': None, 'previous': None, 'results':
-            [{'id': 9, 'video_url': None, 'lesson_name': 'DRF', 'description': None,
-              'photo': None, 'course_name': 9, 'owner': 8}]}
-        self.assertEqual(
-            response.status_code, status.HTTP_200_OK
-        )
-        self.assertEqual(
-            data, result
-        )
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.lesson.pk,
+                    "video_url": self.lesson.video_url,
+                    "lesson_name": self.lesson.lesson_name,
+                    "description": self.lesson.description,
+                    "photo": self.lesson.photo,
+                    "course_name": self.lesson.course_name.pk,
+                    "owner": self.lesson.owner.pk,
+                }
+            ],
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, result)
