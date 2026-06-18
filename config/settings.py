@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import stripe
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,6 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-1ddpez)(3j2t4ll&uw-tcfd%ca3ovmm%n98db#unms(#81a8py'
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 DEBUG = True
 
@@ -27,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_yasg",
     "users",
     "materials",
     "django_filters",
