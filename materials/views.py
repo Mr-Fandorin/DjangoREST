@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.generics import (
@@ -18,6 +19,7 @@ from materials.serializers import (
     LessonSerializer,
     PaymentSerializer,
 )
+from materials.services import create_checkout_session
 from users.models import Payment
 from users.permissions import IsModer, IsOwner
 
@@ -25,7 +27,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-
 
 
 class CourseViewSet(ModelViewSet):
@@ -126,3 +127,28 @@ class ToggleCourseSubscriptionView(APIView):
             status_code = status.HTTP_201_CREATED
 
         return Response({"message": message}, status=status_code)
+
+
+class CreatePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, course_id):
+        course = get_object_or_404(Course, id=course_id)
+
+        session_data = create_checkout_session(course)
+
+        Payment.objects.create(
+            user=request.user,
+            paid_course=course,
+            amount=course.price,
+            stripe_session_id=session_data['session_id'],
+            status='pending',
+        )
+
+        return JsonResponse({
+            'success': True,
+            'payment_url': session_data['url'],
+            'message': 'Перейдите по ссылке для оплаты.'
+        })
+
+

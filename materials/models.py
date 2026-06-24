@@ -18,6 +18,11 @@ class Course(models.Model):
         verbose_name="Владелец",
         help_text="Укажите владельца курса",
     )
+    stripe_product_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_price_id = models.CharField(max_length=255, blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
+    currency = models.CharField(max_length=3, default='rub', verbose_name="Валюта")
+
 
     class Meta:
         verbose_name = "курс"
@@ -75,7 +80,4 @@ class CourseSubscription(models.Model):
         verbose_name = "подписка на курс"
         verbose_name_plural = "подписки на курсы"
         unique_together = ('user', 'course')
-
-
-
 
