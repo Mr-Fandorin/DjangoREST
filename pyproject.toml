@@ -6,7 +6,7 @@ authors = [
     {name = "Your Name",email = "you@example.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<4.0"
 dependencies = [
     "django (>=6.0.5,<7.0.0)",
     "djangorestframework (>=3.17.1,<4.0.0)",
@@ -19,7 +19,12 @@ dependencies = [
     "djangorestframework-simplejwt (>=5.5.1,<6.0.0)",
     "coverage (>=7.14.1,<8.0.0)",
     "drf-yasg (>=1.21.15,<2.0.0)",
-    "stripe (>=15.2.1,<16.0.0)"
+    "stripe (>=15.2.1,<16.0.0)",
+    "celery (==5.5.0)",
+    "eventlet (>=0.41.0,<0.42.0)",
+    "redis (==7.4.0)",
+    "gevent (>=26.5.0,<27.0.0)",
+    "django-celery-beat (>=2.9.0,<3.0.0)"
 ]
 
 
