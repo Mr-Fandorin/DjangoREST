@@ -54,6 +54,14 @@ class CourseViewSet(ModelViewSet):
             self.permission_classes = (~IsModer | IsOwner,)
         return super().get_permissions()
 
+    def perform_update(self, serializer):
+        course = serializer.save()
+
+        from .tasks import send_course_update_email
+
+        send_course_update_email.delay(course.id, course.course_name)
+
+
 
 class LessonCreateAPIView(CreateAPIView):
     serializer_class = LessonSerializer
