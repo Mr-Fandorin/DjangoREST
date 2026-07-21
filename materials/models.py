@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 class Course(models.Model):
     course_name = models.CharField(max_length=200, verbose_name="Название курса")
@@ -8,13 +10,23 @@ class Course(models.Model):
     )
     description = models.TextField(null=True, blank=True, verbose_name="Описание курса")
 
-    # def __str__(self):
-    #     return self.course_name
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца курса",
+    )
+    stripe_product_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_price_id = models.CharField(max_length=255, blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
+    currency = models.CharField(max_length=3, default='rub', verbose_name="Валюта")
+
 
     class Meta:
         verbose_name = "курс"
         verbose_name_plural = "курсы"
-        # ordering = ["course_name"]
 
 
 class Lesson(models.Model):
@@ -36,10 +48,36 @@ class Lesson(models.Model):
         blank=True,
     )
 
-    # def __str__(self):
-    #     return self.lesson_name
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца урока",
+    )
 
     class Meta:
         verbose_name = "урок"
         verbose_name_plural = "уроки"
-        # ordering = ["lesson_name", "course_name"]
+
+class CourseSubscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='course_subscriptions',
+        verbose_name="Пользователь"
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='subscribers',
+        verbose_name="Курс"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
+
+    class Meta:
+        verbose_name = "подписка на курс"
+        verbose_name_plural = "подписки на курсы"
+        unique_together = ('user', 'course')
+
