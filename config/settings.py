@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     "users",
     "materials",
     "django_filters",
-    'django_celery_beat',
+    "django_celery_beat",
     # 'django_celery_results',
 ]
 
@@ -152,11 +152,10 @@ EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 
-if 'test' in sys.argv:
+if "test" in sys.argv:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'test_db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test_db.sqlite3",
         }
     }
-

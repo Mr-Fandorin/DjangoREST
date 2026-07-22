@@ -1,32 +1,22 @@
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
+from rest_framework import filters, status
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from materials.models import Course, Lesson, CourseSubscription
+from materials.models import Course, CourseSubscription, Lesson
 from materials.paginations import CustomPagination
-from materials.serializers import (
-    CourseDetailSerializer,
-    CourseSerializer,
-    LessonSerializer,
-    PaymentSerializer,
-)
+from materials.serializers import (CourseDetailSerializer, CourseSerializer,
+                                   LessonSerializer, PaymentSerializer)
 from materials.services import create_checkout_session
 from users.models import Payment
 from users.permissions import IsModer, IsOwner
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 
 class CourseViewSet(ModelViewSet):
@@ -46,7 +36,7 @@ class CourseViewSet(ModelViewSet):
         course.save()
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == "create":
             self.permission_classes = (~IsModer,)
         elif self.action in ["update", "retrieve"]:
             self.permission_classes = (IsModer | IsOwner,)
@@ -60,7 +50,6 @@ class CourseViewSet(ModelViewSet):
         from .tasks import send_course_update_email
 
         send_course_update_email.delay(course.id, course.course_name)
-
 
 
 class LessonCreateAPIView(CreateAPIView):
@@ -79,12 +68,10 @@ class LessonListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
 
-
 class LessonRetrieveAPIView(RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated, IsModer | IsOwner)
-
 
 
 class LessonUpdateAPIView(UpdateAPIView):
@@ -107,9 +94,6 @@ class PaymentViewSet(ModelViewSet):
     ordering = ["-payment_date"]
 
 
-
-
-
 class ToggleCourseSubscriptionView(APIView):
 
     def post(self, request, course_id):
@@ -118,7 +102,7 @@ class ToggleCourseSubscriptionView(APIView):
         if not user.is_authenticated:
             return Response(
                 {"message": "Требуется авторизация"},
-                status=status.HTTP_401_UNAUTHORIZED
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         course = get_object_or_404(Course, id=course_id)
@@ -127,11 +111,11 @@ class ToggleCourseSubscriptionView(APIView):
 
         if subs_item.exists():
             subs_item.delete()
-            message = 'подписка удалена'
+            message = "подписка удалена"
             status_code = status.HTTP_200_OK
         else:
             CourseSubscription.objects.create(user=user, course=course)
-            message = 'подписка добавлена'
+            message = "подписка добавлена"
             status_code = status.HTTP_201_CREATED
 
         return Response({"message": message}, status=status_code)
@@ -149,14 +133,14 @@ class CreatePaymentView(APIView):
             user=request.user,
             paid_course=course,
             amount=course.price,
-            stripe_session_id=session_data['session_id'],
-            status='pending',
+            stripe_session_id=session_data["session_id"],
+            status="pending",
         )
 
-        return JsonResponse({
-            'success': True,
-            'payment_url': session_data['url'],
-            'message': 'Перейдите по ссылке для оплаты.'
-        })
-
-
+        return JsonResponse(
+            {
+                "success": True,
+                "payment_url": session_data["url"],
+                "message": "Перейдите по ссылке для оплаты.",
+            }
+        )

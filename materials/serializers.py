@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from materials.models import Course, Lesson, CourseSubscription
+from materials.models import Course, CourseSubscription, Lesson
 from materials.validators import validate_youtube_link
 from users.models import Payment
 
@@ -11,7 +11,7 @@ class LessonSerializer(serializers.ModelSerializer):
         required=False,
         allow_blank=True,
         validators=[validate_youtube_link],
-        help_text="Ссылка на видео. Разрешены только YouTube."
+        help_text="Ссылка на видео. Разрешены только YouTube.",
     )
 
     class Meta:
@@ -27,14 +27,11 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             return False
 
-        return CourseSubscription.objects.filter(
-            user=request.user,
-            course=obj
-        ).exists()
+        return CourseSubscription.objects.filter(user=request.user, course=obj).exists()
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):

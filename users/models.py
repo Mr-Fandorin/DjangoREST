@@ -48,7 +48,6 @@ class Payment(models.Model):
         verbose_name="Пользователь",
     )
 
-
     paid_course = models.ForeignKey(
         "materials.Course",
         on_delete=models.SET_NULL,
@@ -57,7 +56,6 @@ class Payment(models.Model):
         related_name="course_payments",
         verbose_name="Оплаченный курс",
     )
-
 
     paid_lesson = models.ForeignKey(
         "materials.Lesson",
@@ -95,5 +93,3 @@ class Payment(models.Model):
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
-
-
