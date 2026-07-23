@@ -38,7 +38,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    models.TextField(blank=True, null=True, verbose_name="Описание курса"),
+                    models.TextField(
+                        blank=True, null=True, verbose_name="Описание курса"
+                    ),
                 ),
             ],
             options={
@@ -64,7 +66,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    models.TextField(blank=True, null=True, verbose_name="Описание урока"),
+                    models.TextField(
+                        blank=True, null=True, verbose_name="Описание урока"
+                    ),
                 ),
                 (
                     "photo",
