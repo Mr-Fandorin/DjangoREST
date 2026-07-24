@@ -21,8 +21,7 @@ class Course(models.Model):
     stripe_product_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_price_id = models.CharField(max_length=255, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
-    currency = models.CharField(max_length=3, default='rub', verbose_name="Валюта")
-
+    currency = models.CharField(max_length=3, default="rub", verbose_name="Валюта")
 
     class Meta:
         verbose_name = "курс"
@@ -61,23 +60,23 @@ class Lesson(models.Model):
         verbose_name = "урок"
         verbose_name_plural = "уроки"
 
+
 class CourseSubscription(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='course_subscriptions',
-        verbose_name="Пользователь"
+        related_name="course_subscriptions",
+        verbose_name="Пользователь",
     )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='subscribers',
-        verbose_name="Курс"
+        related_name="subscribers",
+        verbose_name="Курс",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
 
     class Meta:
         verbose_name = "подписка на курс"
         verbose_name_plural = "подписки на курсы"
-        unique_together = ('user', 'course')
-
+        unique_together = ("user", "course")

@@ -9,7 +9,7 @@ from materials import views
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
-        default_version='v1',
+        default_version="v1",
         description="Test description",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
@@ -23,9 +23,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("materials/", include("materials.urls", namespace="materials")),
     path("users/", include("users.urls", namespace="users")),
-
     path(
-    "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
+        "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
     ),
     path(
         "swagger/",
@@ -33,6 +32,9 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=8), name="schema-redoc"),
-
-    path('payment/create/<int:course_id>/', views.CreatePaymentView.as_view(), name='create_payment'),
+    path(
+        "payment/create/<int:course_id>/",
+        views.CreatePaymentView.as_view(),
+        name="create_payment",
+    ),
 ]

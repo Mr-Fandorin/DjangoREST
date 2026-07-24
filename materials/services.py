@@ -1,8 +1,10 @@
 import stripe
 from django.conf import settings
+
 from materials.models import Course
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def create_stripe_product_and_price(course: Course) -> dict:
     """Создает продукт и цену в Stripe, если их еще нет."""
@@ -23,10 +25,7 @@ def create_stripe_product_and_price(course: Course) -> dict:
         course.stripe_price_id = stripe_price.id
 
     course.save()
-    return {
-        'product_id': course.stripe_product_id,
-        'price_id': course.stripe_price_id
-    }
+    return {"product_id": course.stripe_product_id, "price_id": course.stripe_price_id}
 
 
 def create_checkout_session(course: Course) -> dict:
@@ -34,18 +33,20 @@ def create_checkout_session(course: Course) -> dict:
     create_stripe_product_and_price(course)
 
     session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{
-            'price': course.stripe_price_id,
-            'quantity': 1,
-        }],
-        mode='payment',
-        success_url='http://127.0.0.1:8000/',
+        payment_method_types=["card"],
+        line_items=[
+            {
+                "price": course.stripe_price_id,
+                "quantity": 1,
+            }
+        ],
+        mode="payment",
+        success_url="http://127.0.0.1:8000/",
         metadata={
-            'course_id': str(course.id),
+            "course_id": str(course.id),
         },
     )
     return {
-        'url': session.url,
-        'session_id': session.id,
+        "url": session.url,
+        "session_id": session.id,
     }
